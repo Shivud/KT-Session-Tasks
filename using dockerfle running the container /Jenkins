@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_CREDENTIALS = credentials('shivanandd') // Reference your credentials ID
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/Shivud/sep24.git' // Replace with your repo URL
+            }
+        }
+
+
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    sh 'echo "$DOCKER_CREDENTIALS_PSW" | docker login -u "$DOCKER_CREDENTIALS_USR" --password-stdin'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t shivanandd/web-page2 .' // Adjust the image name
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    sh 'docker push shivanandd/web-page2' // Adjust as needed
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh 'docker run -d -p 8020:80 shivanandd/web-page2' // Adjust as needed
+                }
+            }
+        }
+    }
+
+    
+}
