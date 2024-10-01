@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('clone') {
+            steps {
+                git credentialsId: 'Shivanand', url: 'https://github.com/Shivud/Newtask.git'
+                 }
+        }
+        stage('build image'){
+            steps {
+                script {
+                docker.build('my-server-img')
+            }
+        }
+    }
+         stage('run docker'){
+            steps {
+                script{
+                docker.image('my-server-img').run('-p 8013:80')
+            }
+        }
+    }
+}
+}
